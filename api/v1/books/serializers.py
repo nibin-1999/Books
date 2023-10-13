@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
-from books.models import Category, Book
+from books.models import Comment, Book
 
 
 class BookSerializer(ModelSerializer):
@@ -14,3 +14,7 @@ class BookSerializer(ModelSerializer):
     def get_categories(self, instance):
         return [category.name for category in instance.categories.all()]
 
+class CommentSerializer(ModelSerializer):
+    class Meta:
+        fields =("id","comment","user","date")
+        model = Comment

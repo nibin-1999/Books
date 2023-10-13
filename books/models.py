@@ -19,3 +19,14 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+class Comment(models.Model):
+    book=models.ForeignKey("books.book",on_delete=models.CASCADE)
+    user= models.ForeignKey("auth.User", on_delete=models.CASCADE)
+    date= models.DateTimeField()
+    comment= models.TextField()
+    
+    class Meta:
+        db_table = "books_comment"
+    
+    def __str__(self):
+        return str(self.id)

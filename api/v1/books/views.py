@@ -1,9 +1,10 @@
+import datetime
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.db.models import Q
-from books.models import Category, Book
-from api.v1.books.serializers import BookSerializer
+from books.models import Comment, Book
+from api.v1.books.serializers import BookSerializer,CommentSerializer
 
 
 @api_view(["GET"])
@@ -93,37 +94,6 @@ def delete(request, pk):
 
     return Response(response_data)
 
-
-# @api_view(['PUT'])
-# @permission_classes([IsAuthenticated])
-# def update(request, pk):
-#     try:
-#         book = Book.objects.get(pk=pk)
-#         print(book)
-
-#         serializer = BookSerializer(instance=book, data=request.data, partial=True)
-
-#         if serializer.is_valid():
-#             serializer.save()
-#             response_data = {
-#                 "status_code": 6000,
-#                 "message": "Success",
-#                 "data": serializer.data
-#             }
-#         else:
-#             response_data = {
-#                 "status_code": 6001,
-#                 "message": "Validation Error",
-#                 "data": serializer.errors
-#             }
-
-#         return Response(response_data)
-#     except Book.DoesNotExist:
-#         response_data = {
-#             "status_code": 6001,
-#             "message": "This Book doesn't exist"
-#         }
-#         return Response(response_data)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update(request, pk):
@@ -186,3 +156,57 @@ def view_favorites(request):
             "message": "No favorite books found"
         }
     return Response(response_data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_comment(request,pk):
+    if Book.objects.filter(pk=pk).exists():
+        instance = Book.objects.get(pk=pk)
+        comment = request.data["comment"]
+        
+        Comment.objects.create(
+            user=request.user,
+            comment=comment,
+            book=instance,
+            date=datetime.datetime.now()
+            
+        )
+        response_data = {
+            "status_code": 6000,
+            "message": "Succesfully added"
+        }
+        
+    else:
+        response_data = {
+            "status_code": 6001,
+            "message": "Comment not exist"
+        }
+    return Response(response_data)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def comments(request,pk):
+    if Book.objects.filter(pk=pk).exists():
+        book = Book.objects.get(pk=pk)
+        
+        instances = Comment.objects.filter(book=book)
+        context={
+            "request": request
+        }
+        
+        serializer = CommentSerializer(instances, many=True,context=context)
+
+        responce_data ={
+            
+            "status_code" : 6000,
+            "message" : serializer.data
+        }
+        
+    else:
+        responce_data = {
+            
+            "status_code" : 6001,
+            "message" : "Book not exist"
+        }
+        
+    return Response(responce_data)

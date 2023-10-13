@@ -11,5 +11,5 @@ urlpatterns = [
     path('view-favorites/',views.view_favorites),
     path("comments/create/<int:pk>",views.create_comment),
     path("comments/list/<int:pk>",views.comments)
-
+    
 ]

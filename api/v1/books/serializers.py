@@ -16,5 +16,5 @@ class BookSerializer(ModelSerializer):
 
 class CommentSerializer(ModelSerializer):
     class Meta:
-        fields =("id","comment","user","date")
+        fields =("id","user","comment","date")
         model = Comment

@@ -16,6 +16,9 @@ class Book(models.Model):
     comments = models.TextField(null=True, blank=True)
     is_favourite = models.BooleanField(default=False)
 
+    is_deleted = models.BooleanField(default=False)
+    is_draft = models.BooleanField(default=False)
+
     def __str__(self):
         return self.title
 

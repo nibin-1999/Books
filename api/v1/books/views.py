@@ -1,11 +1,13 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from api.v1.books.serializers import BookSerializer
+from api.v1.books.serializers import BookSerializer, BookDetailSerializer
 from books.models import Book
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def books(request):
     instances = Book.objects.filter(is_deleted=False)
     context = {
@@ -20,6 +22,7 @@ def books(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def book(request, pk):
     if Book.objects.filter(pk=pk).exists():
 
